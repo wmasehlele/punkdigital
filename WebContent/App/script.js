@@ -1,12 +1,10 @@
+
 $(function() {
 	$('#badnews').hide();
 	$('#goodnews').hide();
 	$('#download').hide();
-});
-$(function() {
-    $('#generate').click('click', function(event) {
+	$('#generate').click('click', function(event) {
     	event.preventDefault();
-
     	var postdata = {};
     	postdata.names = $('#names').val();
     	postdata.position = $('#position').val();
@@ -20,13 +18,11 @@ $(function() {
 			data: postdata,
 			dataType: 'application/json'
     	}).success(function(respdata){
-    		if (respdata.status){
+    		console.log(respdata);
     			$('#goodnews').show();
     			$('#download').show();
-    		} else {
-    			$('#badnews').show();
-    		}
     	}).error(function(respdata){
+    		console.log(respdata);
     		$('#badnews').show();
     	});
     });
