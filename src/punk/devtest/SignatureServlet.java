@@ -31,7 +31,27 @@ public class SignatureServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		HttpSession session = request.getSession(true);
+		String imageName = session.getAttribute("imageName").toString();
+		int httpResponsede = signatureObject.downloadFile(imageName);
+System.out.println("Session image name: "+imageName); 		
+		JSONObject jsonObject = new JSONObject();
+		try {
+			if (httpResponsede != 200){
+				jsonObject.put("status", false);
+				jsonObject.put("status_code", httpResponsede);
+			} else {
+				jsonObject.put("status", true);
+				jsonObject.put("status_code", httpResponsede);
+			}
+		} catch (JSONException e) {			
+			e.printStackTrace();
+		}
+		String json = new Gson().toJson(jsonObject);
+		response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);		
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 	
 	/**
@@ -48,8 +68,17 @@ public class SignatureServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession(true);
 		String imageName = signatureObject.generateSignature();
-		session.setAttribute("imageUrl", "C:\\Users\\William\\"+imageName);
-		
+		try{
+			if (imageName == "failed"){
+				jsonObject.put("status", false);
+				session.setAttribute("imageName", imageName);				
+			} else {
+				session.setAttribute("imageName", imageName);
+				jsonObject.put("status", true);
+			}
+		} catch (JSONException e){
+			e.printStackTrace();
+		}
 		String json = new Gson().toJson(jsonObject);
 		response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

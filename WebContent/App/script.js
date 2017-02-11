@@ -1,8 +1,4 @@
-
 $(function() {
-	$('#badnews').hide();
-	$('#goodnews').hide();
-	$('#download').hide();
 	$('#generate').click('click', function(event) {
     	event.preventDefault();
     	var postdata = {};
@@ -11,19 +7,13 @@ $(function() {
     	postdata.tell = $('#tell').val();
     	postdata.email = $('#email').val();
     	postdata.logoUrl = $('#logoUrl').val();
-
-    	$.ajax({
+    	$.ajax({ 
 			type: "POST",
 			url: "SignatureServlet",
 			data: postdata,
 			dataType: 'application/json'
     	}).success(function(respdata){
-    		console.log(respdata);
-    			$('#goodnews').show();
-    			$('#download').show();
     	}).error(function(respdata){
-    		console.log(respdata);
-    		$('#badnews').show();
     	});
     });
 });
@@ -33,13 +23,10 @@ $(function() {
     	event.preventDefault();
     	$.ajax({
 			type: "GET",
-			url: "/webcontacts/api-contact-yeeperk",
-			data: postdata,
+			url: "SignatureServlet",
 			dataType: 'application/json'
     	}).success(function(respdata){
-
     	}).error(function(respdata){
-
     	});
     });
 });

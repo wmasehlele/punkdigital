@@ -31,7 +31,7 @@ class App extends React.Component {
                                 <input type="text" id="email" className="form-control" />
                             </div>
                             <div className="form-group" > 
-                                <label>Logo Url: </label>
+                                <label>Company name: </label>
                                 <input type="text" id="logoUrl" className="form-control" />
                             </div>
                             <div className="form-group">
@@ -40,10 +40,6 @@ class App extends React.Component {
                        </form>
                     </div>
                     <div className="col-lg-4 col-lg-offset-4">
-                         <div className="form-group">
-                             <label className="alert alert-success" id="goodnews">Good news. Your signature ready.</label>
-                             <label className="alert alert-danger" id="badnews">Sorry! Something went wrong.</label>
-                         </div>
                          <div className="form-group">
                              <input type="button" id="download" className="btn btn-md btn-success" value="Download" />
                          </div>                                     
