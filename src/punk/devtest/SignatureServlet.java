@@ -96,7 +96,7 @@ public class SignatureServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		//Send the response to the request client
-		response.setContentType("application/json;charset=utf-8");
+		response.setContentType("application/json");
 		response.getWriter().print(this.jsonObject);
 	}
 }

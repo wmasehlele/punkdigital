@@ -9557,7 +9557,7 @@ var App = function (_React$Component) {
                             _react2.default.createElement(
                                 "div",
                                 { className: "form-group" },
-                                _react2.default.createElement("input", { type: "submit", className: "btn btn-md btn-success", value: "Download" })
+                                _react2.default.createElement("input", { id: "download", type: "submit", className: "btn btn-md btn-success", value: "Download" })
                             )
                         )
                     )

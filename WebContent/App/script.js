@@ -1,4 +1,6 @@
-
+$(function(){
+	$('#download').hide();
+});
 $(function() {
 	$('#generate').click('click', function(event) {
     	event.preventDefault();
@@ -8,26 +10,16 @@ $(function() {
     	postdata.tell = $('#tell').val();
     	postdata.email = $('#email').val();
     	postdata.logoUrl = $('#logoUrl').val();
-    	$.ajax({ 
-			type: "POST",
+		$.ajax({
+			type: "POST",  
 			url: "SignatureServlet",
 			data: postdata,
-			dataType: 'application/json'
-    	}).success(function(respdata){
-console.log(respdata);    		
-    	}).error(function(respdata){
-    	});
-    });
-});
-
-$(function() {
-    $('#download').click('click', function(event) {
-    	event.preventDefault();
-    	$.ajax({
-			type: "GET",
-			url: "SignatureServlet",
-    	}).success(function(respdata){
-    	}).error(function(respdata){
-    	});
+			success: function( result ) {
+				alert("Your signature is ready for download");				
+				$('#download').show();
+			},error: function( result ) {
+				alert("Sorry an error occured. Please try again");	
+			}
+		});    	    	
     });
 });

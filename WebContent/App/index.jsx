@@ -42,7 +42,7 @@ class App extends React.Component {
                     <div className="col-lg-4 col-lg-offset-4">
                          <form method="GET" action="SignatureServlet">
                              <div className="form-group">
-                                 <input type="submit" className="btn btn-md btn-success" value="Download" />
+                                 <input id="download" type="submit" className="btn btn-md btn-success" value="Download" />
                              </div>  
                          </form>
                     </div>
