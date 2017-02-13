@@ -40,9 +40,11 @@ class App extends React.Component {
                        </form>
                     </div>
                     <div className="col-lg-4 col-lg-offset-4">
-                         <div className="form-group">
-                             <input type="button" id="download" className="btn btn-md btn-success" value="Download" />
-                         </div>                                     
+                         <form method="GET" action="SignatureServlet">
+                             <div className="form-group">
+                                 <input type="submit" className="btn btn-md btn-success" value="Download" />
+                             </div>  
+                         </form>
                     </div>
                 </div>
            </div>

@@ -1,3 +1,4 @@
+
 $(function() {
 	$('#generate').click('click', function(event) {
     	event.preventDefault();
@@ -13,6 +14,7 @@ $(function() {
 			data: postdata,
 			dataType: 'application/json'
     	}).success(function(respdata){
+console.log(respdata);    		
     	}).error(function(respdata){
     	});
     });
@@ -24,7 +26,6 @@ $(function() {
     	$.ajax({
 			type: "GET",
 			url: "SignatureServlet",
-			dataType: 'application/json'
     	}).success(function(respdata){
     	}).error(function(respdata){
     	});

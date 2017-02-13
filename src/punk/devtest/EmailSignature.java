@@ -4,162 +4,121 @@ import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
-
 import org.apache.commons.io.FileUtils;
 
-public class EmailSignature implements SignatureInterface{
-	private String strNames;
-	private String strPosition;
-	private String strTell;
-	private String strEmail;
-	private String strLogoUrl;
+//import org.apache.commons.io.FileUtils; We need this to be able to convert ou html content to string.
+
+/*
+ * Programmer: William Moela
+ * Description: The program accept user input from a web page and generate email signature as an image (.PNG) file.
+ * Comments: I just though it would be appropriate to throw in some OOP concept such as inheritance. 
+ * 
+ * For more details see the README file.
+ */
+
+public class EmailSignature extends Signature{
 	
-	public String getStrNames() {
-		return strNames;
-	}
-	public void setStrNames(String strNames) {
-		this.strNames = strNames;
-	}
-	public String getStrPosition() {
-		return strPosition;
-	}
-	public void setStrPosition(String strPosition) {
-		this.strPosition = strPosition;
-	}
-	public String getStrTell() {
-		return strTell;
-	}
-	public void setStrTell(String strTell) {
-		this.strTell = strTell;
-	}
-	public String getStrLogoUrl() {
-		return strLogoUrl;
-	}
-	public void setStrLogoUrl(String strLogoUrl) {
-		this.strLogoUrl = strLogoUrl;
-	}
-	public String getStrEmail() {
-		return strEmail;
-	}
-	public void setStrEmail(String strEmail) {
-		this.strEmail = strEmail;
+	private Random rand;
+	
+	//In our constructor we initialize the project directory.
+	public EmailSignature(){
+		//the getClass function will point us to the class deployment library folder.
+		//getClassLoader will prepare our path to the destination
+		//getResource will referee to the actual file, but in this case we dont need the file, hence we invoke the getPath function so we can just retrieve the path.
+		String path = this.getClass().getClassLoader().getResource("").getPath();
+		String pathArr[] = null;
+		try {
+			//We need to get only the relevant portion of the path that will help us to point to our required locations.
+			//To do this, we split the path into two portions. The split function will return an array.
+			//We are interested with first index of the array.
+			//As we know from the path we might come across some funny characters, we need to standardize this chars. 
+			//UTF-8 is used to decode or rather say to standardize the path characters
+			//UTF-8 uses 8bit to represent each character which is found to be file for the path and we expecting mostly forward and back slashes in the path
+			pathArr = URLDecoder.decode(path, "UTF-8").split(".metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PunkDigital/WEB-INF/classes/");
+			//we globally set the path once so we do do unnecessary processing during runtime. 
+			this.setStrPath(pathArr[0]);
+		} catch (UnsupportedEncodingException e2) {
+			e2.printStackTrace();
+		}		
 	}
 	
-	@Override
-	public String generateSignature() throws MalformedURLException {	
-		Random rand = new Random();
+	public String generateSignature(){	
+		
+		//Create image name using random number suffix.
+		//initialize the random only when is required to avoid multiple objects of the same reference.
+		if (null == rand){
+			rand = new Random();
+		}
+		
 		int tempid = rand.nextInt(1000) + 1;
-		String imageName = "image_"+tempid+".png";
-		File htmlTemplateFile = new File("C:\\Users\\William\\workspace\\PunkDigital\\WebContent\\signature.html");
+		String imageName = "image_"+tempid+".png";		
+		
+		//Read in a template from html to build our signature
+		File htmlTemplateFile = new File(this.strPath+"\\PunkDigital\\WebContent\\signature.html");
+		
+		//carete and initialize a new html file to hold the updated template
 		File newHtmlFile = null;
 		String htmlString = "";
+		
 		try {
+			//Read the template file and convert the content to string
 			htmlString = FileUtils.readFileToString(htmlTemplateFile);
+			
+			//We start replacing our template place holders withn the actual content from the user
 			htmlString = htmlString.replace("$names", this.strNames);
 			htmlString = htmlString.replace("$position", this.strPosition);
 			htmlString = htmlString.replace("$email", this.strEmail);
 			htmlString = htmlString.replace("$tell", this.strTell);
 			htmlString = htmlString.replace("$logo", this.strLogoUrl);
-			newHtmlFile = new File("C:\\Users\\William\\workspace\\PunkDigital\\WebContent\\new_signature.html");
+			
+			//Commit the changes to a new html file template. 
+			//At this a html file with our signature is ready to be converted into an image
+			newHtmlFile = new File(this.strPath+"\\PunkDigital\\WebContent\\new_signature.html");
 			FileUtils.writeStringToFile(newHtmlFile, htmlString);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 	
+		String html = "";
 		try {
-			htmlString = FileUtils.readFileToString(newHtmlFile);
+			//Now we read in our updated template and convert the content to string
+			html = FileUtils.readFileToString(newHtmlFile).toString();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		
-        String html = htmlString.toString();		
+		//set the image size.
         int width = 600, height = 150;
-        // Create a `BufferedImage` and create the its `Graphics`
-        BufferedImage image_ = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice().getDefaultConfiguration()
-                .createCompatibleImage(width, height);
+        // Now we create a buffered image with the sizes specified above. 
+        //At this point we have an image container waiting for our content to be loaded and converted to image
+        BufferedImage image_ = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
+
+        //Our image is being prepared to load the image graphics.
         Graphics graphics = image_.createGraphics();
-        // Create an `JEditorPane` and invoke `print(Graphics)`
+        
+        //To load the graphics we need a container to lead our image graphics from the template.
+        //We will do this with a JEditorPane from the java swing packgae.
         JEditorPane jep = new JEditorPane("text/html", html);
+        //Our pane size should equate our image's size.
         jep.setSize(width, height);
+        //The print function is invoked to set or color our pane with the template graphic.
         jep.print(graphics);
-        // Output the `BufferedImage` via `ImageIO`
-		rand = new Random();
-		tempid = rand.nextInt(1000) + 1;
-		imageName = "image_"+tempid+".png";      
+        
         try {
-            ImageIO.write(image_, "png", new File("C:\\Users\\William\\workspace\\PunkDigital\\WebContent\\images\\"+imageName));
+        	//Now our image is ready, we just have to write it into the system directory with the appropriate format.
+            ImageIO.write(image_, "png", new File(this.strPath+"\\PunkDigital\\WebContent\\images\\"+imageName));
         } catch (IOException e) {
         	imageName = "failed";
             e.printStackTrace();
         }
-        System.out.println(imageName);		
+        System.out.println(imageName);	
+        //We return the image name for later use.
 		return imageName;
-	}
-	
-    public int downloadFile(String imageName) throws IOException {
-    	String fileURL = "http://localhost:8080/PunkDigital/Images/"+imageName;
-    	String saveDir = "C:\\Users\\William\\testimages\\";
-        URL url = new URL(fileURL);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        int responseCode = httpConn.getResponseCode();
- 
-        // always check HTTP response code first
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = "";
-            String disposition = httpConn.getHeaderField("Content-Disposition");
-            String contentType = httpConn.getContentType();
-            int contentLength = httpConn.getContentLength();
- 
-            if (disposition != null) {
-                // extracts file name from header field
-                int index = disposition.indexOf("filename=");
-                if (index > 0) {
-                    fileName = disposition.substring(index + 10,
-                            disposition.length() - 1);
-                }
-            } else {
-                // extracts file name from URL
-                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-                        fileURL.length());
-            }
- 
-            System.out.println("Content-Type = " + contentType);
-            System.out.println("Content-Disposition = " + disposition);
-            System.out.println("Content-Length = " + contentLength);
-            System.out.println("fileName = " + fileName);
- 
-            // opens input stream from the HTTP connection
-            InputStream inputStream = httpConn.getInputStream();
-            String saveFilePath = saveDir + File.separator + fileName;
-             
-            // opens an output stream to save into file
-            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
- 
-            int bytesRead = -1;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
- 
-            outputStream.close();
-            inputStream.close();
- 
-            System.out.println("File downloaded");
-        } else {
-            System.out.println("No file to download. Server replied HTTP code: " + responseCode);
-        }
-        httpConn.disconnect();
-        return responseCode;
-    }	
+	}	
 }
