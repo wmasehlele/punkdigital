@@ -1,5 +1,5 @@
 # PUNK 
-#Dev Test Solution - Java web app
+#Dev Test Solution - Java web app: Create email signature image using java and react. 
 
 #instruction
 Clone the repository
